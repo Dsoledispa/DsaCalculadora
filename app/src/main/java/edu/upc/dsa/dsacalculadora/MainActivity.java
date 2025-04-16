@@ -1,5 +1,6 @@
 package edu.upc.dsa.dsacalculadora;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,17 +15,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+    private double memoria = 0;
     private TextView text_respuesta;
-    private EditText edit_numero_uno;
-    private EditText edit_numero_dos;
-    private Button btn_suma;
-    private Button btn_resta;
-    private Button btn_multiplicar;
-    private Button btn_dividir;
+    private EditText edit_numero;
+    private Button btn_suma, btn_resta, btn_multiplicar, btn_dividir, btn_reset;
 
-
-
-
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,53 +32,41 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         text_respuesta = findViewById(R.id.respuesta);
-        edit_numero_uno = findViewById(R.id.numero1);
-        edit_numero_dos = findViewById(R.id.numero2);
+        edit_numero = findViewById(R.id.numero);
         btn_suma = findViewById(R.id.button_suma);
-        btn_suma.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               text_respuesta.setText(suma(Double.parseDouble(edit_numero_uno.getText().toString()), Double.parseDouble(edit_numero_dos.getText().toString()))+"");
-            }
-        });
         btn_resta = findViewById(R.id.button_resta);
-        btn_resta.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                text_respuesta.setText(resta(Double.parseDouble(edit_numero_uno.getText().toString()), Double.parseDouble(edit_numero_dos.getText().toString()))+"");
-            }
-        });
         btn_multiplicar = findViewById(R.id.button_multiplicar);
-        btn_multiplicar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                text_respuesta.setText(multiplicar(Double.parseDouble(edit_numero_uno.getText().toString()), Double.parseDouble(edit_numero_dos.getText().toString()))+"");
-            }
-        });
         btn_dividir = findViewById(R.id.button_dividir);
-        btn_dividir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                text_respuesta.setText(dividir(Double.parseDouble(edit_numero_uno.getText().toString()), Double.parseDouble(edit_numero_dos.getText().toString()))+"");
-            }
+        btn_reset = findViewById(R.id.button_reset);
+
+        btn_suma.setOnClickListener(v -> operar("+"));
+        btn_resta.setOnClickListener(v -> operar("-"));
+        btn_multiplicar.setOnClickListener(v -> operar("*"));
+        btn_dividir.setOnClickListener(v -> operar("/"));
+        btn_reset.setOnClickListener(v -> {
+            memoria = 0;
+            text_respuesta.setText("0");
         });
 
     }
 
-    public double suma (double a, double b){
-        return a+b;
-    }
-    public double resta (double a, double b){
-        return a-b;
-    }
-    public double multiplicar (double a, double b){
-        return a*b;
-    }
-    public double dividir (double a, double b){
-        double respuesta = 0;
-        if (b!=0){
-            return a/b;
+    private void operar(String operacion) {
+        String input = edit_numero.getText().toString();
+        if (input.isEmpty()) return;
+
+        double numero = Double.parseDouble(input);
+
+        switch (operacion) {
+            case "+": memoria += numero; break;
+            case "-": memoria -= numero; break;
+            case "*": memoria *= numero; break;
+            case "/":
+                if (numero != 0) memoria /= numero;
+                else memoria = 0;
+                break;
         }
-        return respuesta;
+
+        text_respuesta.setText(String.valueOf(memoria));
+        edit_numero.setText(""); // limpia el campo
     }
 }
